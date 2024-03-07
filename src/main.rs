@@ -48,7 +48,7 @@ async fn get_ip_list() -> anyhow::Result<String> {
     let network_interfaces = list_afinet_netifas()?;
 
     for (name, ip) in network_interfaces.iter() {
-        s.push_str(&format!("{}:\t{:?}", name, ip));
+        s.push_str(&format!("{}:\t{:?}\n", name, ip));
     }
 
     Ok(s)

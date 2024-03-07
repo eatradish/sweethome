@@ -1,0 +1,12 @@
+[package]
+name = "ip"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+teloxide = { version = "0.12", features = ["macros"] }
+tokio = { version =  "1.35", features = ["rt-multi-thread", "macros", "process"] }
+dotenv = "0.15.0"
+anyhow = "1"

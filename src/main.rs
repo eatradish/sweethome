@@ -1,5 +1,6 @@
 use std::env;
 
+use local_ip_address::list_afinet_netifas;
 use teloxide::{
     macros::BotCommands,
     repls::CommandReplExt,
@@ -7,7 +8,6 @@ use teloxide::{
     types::{ChatId, Message},
     Bot,
 };
-use tokio::process::Command as ProcessCommand;
 
 #[derive(BotCommands, Clone)]
 #[command(
@@ -33,7 +33,7 @@ async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
                 return Ok(());
             }
 
-            match run_cmd().await {
+            match get_ip_list().await {
                 Ok(s) => bot.send_message(msg.chat.id, s).await?,
                 Err(e) => bot.send_message(msg.chat.id, e.to_string()).await?,
             };
@@ -43,13 +43,13 @@ async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
     Ok(())
 }
 
-async fn run_cmd() -> anyhow::Result<String> {
-    let res = ProcessCommand::new("ip").arg("a").output().await?;
-
+async fn get_ip_list() -> anyhow::Result<String> {
     let mut s = String::new();
-    s.push_str(&String::from_utf8_lossy(&res.stdout));
-    s.push_str("\n\n");
-    s.push_str(&String::from_utf8_lossy(&res.stderr));
+    let network_interfaces = list_afinet_netifas()?;
+
+    for (name, ip) in network_interfaces.iter() {
+        s.push_str(&format!("{}:\t{:?}", name, ip));
+    }
 
     Ok(s)
 }

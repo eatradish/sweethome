@@ -45,7 +45,7 @@ async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
 
 async fn get_ip_list() -> anyhow::Result<String> {
     let mut s = String::new();
-    let network_interfaces = list_afinet_netifas()?;
+    let network_interfaces = tokio::task::spawn_blocking(move || list_afinet_netifas()).await??;
 
     for (name, ip) in network_interfaces.iter() {
         s.push_str(&format!("{}:\t{:?}\n", name, ip));
